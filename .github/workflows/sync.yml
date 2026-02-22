@@ -19,6 +19,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Scan zip files and generate list
+        run: |
+          find . -maxdepth 1 -name "*.zip" -printf "%f\n" | sort > skins.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add skins.txt
+          git diff --cached --quiet || git commit -m "chore: update skins.txt [skip ci]"
+
       - name: Add mirror remote (with token)
         env:
           MIRROR_URL: ${{ secrets.CNB_URL }}
@@ -30,4 +38,5 @@ jobs:
 
       - name: Push all branches and tags
         run: |
+          git push origin --all --force
           git push mirror --all --force
